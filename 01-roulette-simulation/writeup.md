@@ -14,7 +14,7 @@
 library(dplyr)
 library(ggplot2)
 one_play <- function(state){
-  
+    # browser()
     # Wager
     proposed_wager <- ifelse(state$previous_win, 1, 2*state$previous_wager)
     wager <- min(proposed_wager, state$M, state$B)
@@ -44,6 +44,7 @@ one_play <- function(state){
 #' @param state A list.  See one_play
 #' @return TRUE/FALSE
 stop_play <- function(state){
+  # browser()
   if(state$B <= 0) return(TRUE)
   if(state$plays >= state$L) return(TRUE)
   if(state$B >= state$W) return(TRUE)
@@ -75,7 +76,7 @@ one_series <- function(
   , previous_wager = 0
   , previous_win = TRUE
   )
-  
+  # browser()
   # vector to store budget over series of plays
   budget <- rep(NA, L)
   
@@ -83,6 +84,7 @@ one_series <- function(
   for(i in 1:L){
     new_state <- state %>% one_play
     budget[i] <- new_state$B
+    # browser()
     if(new_state %>% stop_play){
       return(budget[1:i])
     }
@@ -96,7 +98,7 @@ get_last <- function(x) x[length(x)]
 
 
 # Simulation
-walk_out_money <- rep(NA, 10000)
+walk_out_money <- rep(NA, 2000)
 for(j in seq_along(walk_out_money)){
   walk_out_money[j] <- one_series(B = 200, W = 300, L = 1000, M = 100) %>% get_last
 }
@@ -112,15 +114,96 @@ mean(walk_out_money - 200)
 
 # Average earnings of a gambler that uses this strategy?
 # By repeating the process, we could estimate the operating characteristics for simulating distribution. We sum the value of walk out money and divide maximum number of plays to receive the average earnings. 
-average_earnings <- sum(one_series()-200)/1000
+average_earnings <- mean(walk_out_money - 200)
 
 # provide a figure (or a series of figures) that show how the gamblers earnings (or losses) evolve over a series of wagers at the roulette wheel?
 # The x-axis will be the wager number (or play number), the y-axis will be earnings.
-# We could see that in one specific series, before the gambler stops, we can reach the winnings threshold in a long run. Some outliers do exist.
+# We could see that in one specific series, before the gambler stops, loss and win come and go. From the distribution of earnings graph, it is interesting to see that when the play number is bigger than 60, the earnings drops quickly. 
+set.seed(2)
 plot(one_series(), main=paste("Distribution of Earnings"), xlab="play number", ylab="earnings")
-
+plot(one_series()[1:10], type = "b")
 # how changing a parameter of the simulation (see table below) does or does not have an impact on average earnings?
-# We can try to change W from 300 to 500.
+# We can try to change W from 300 to 500, and we have a distribution for each gap with 50, such as when W = 300, W = 350, W = 400 etc.
+
+# Here we show the graph for the previous average earnings with 500 times repeatting. Then each of the previous average earning value has been plotted in one graph.
+walk_out_money <- rep(NA, 500)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 300, L = 1000, M = 100) %>% get_last
+}
+set<-c()
+count <- 0
+while(count<500 ) {
+
+    add <- walk_out_money-200
+    set <- c(set,add)
+    count=count+1
+}
+
+
+walk_out_money <- rep(NA, 500)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 350, L = 1000, M = 100) %>% get_last
+}
+set2<-c()
+count <- 0
+while(count<500 ) {
+
+    add <- walk_out_money-200
+    set2 <- c(set2,add)
+    count=count+1
+}
+
+
+walk_out_money <- rep(NA, 500)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 400, L = 1000, M = 100) %>% get_last
+}
+set3<-c()
+count <- 0
+while(count<500 ) {
+
+    add <- walk_out_money-200
+    set3 <- c(set3,add)
+    count=count+1
+}
+
+walk_out_money <- rep(NA, 500)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 450, L = 1000, M = 100) %>% get_last
+}
+set4<-c()
+count <- 0
+while(count<500 ) {
+
+    add <- walk_out_money-200
+    set4 <- c(set4,add)
+    count=count+1
+}
+
+walk_out_money <- rep(NA, 500)
+for(j in seq_along(walk_out_money)){
+  walk_out_money[j] <- one_series(B = 200, W = 500, L = 1000, M = 100) %>% get_last
+}
+set5<-c()
+count <- 0
+while(count<500 ) {
+
+    add <- walk_out_money-200
+    set5 <- c(set5,add)
+    count=count+1
+}
+
+list<-c(mean(set),mean(set2),mean(set3),mean(set4),mean(set5))
+plot(list,xlab="Different W Values", ylab="Average Earnings")
+# From the graph, we can see that there have been some impacts on average earnings. The overall value of average earning is smaller when W gets to 500.
+
+
+#### Extra interests for earnings that based on each series. What if we are more focusing for the process of win and lose?
+# The average earning for series should be:
+average_earnings_series <- sum(one_series()-200)/1000
+
+# how changing a parameter of the simulation (see table below) does or does not have an impact on average earnings for series?
+# We can still try to change W from 300 to 500.
 one_series_change <- function(
     B = 200
   , W = 500
@@ -156,15 +239,15 @@ one_series_change <- function(
 a <- one_series_change()
 average_earnings_change <- sum(a-200)/1000
 # Here we show the graph for the previous average earnings with 1000 times repeatting. Then each of the previous average earning value has been plotted in one graph.
-set<-c()
+set_series<-c()
 count <- 0
 while(count<1000) {
 
     add <- sum(one_series()-200)/1000
-    set <- c(set,add)
+    set_series <- c(set_series,add)
     count=count+1
 }
-plot(set)
+plot(set_series)
 # Here we show the graph for the new average earnings with 1000 times repeatting. Then each of the previous average earning value has been plotted in one graph.
 set_changed<-c()
 count <- 0
@@ -175,7 +258,9 @@ while(count<1000) {
     count=count+1
 }
 plot(set_changed)
-# From the two graphs, we can see that there have been some impacts on average earnings. Despite the overall value of average earning is larger when W = 500, when W = 300, there are two distinct horizontal significant related lines: one is around 0, and another is around 10. When W = 500, there is only one which is around 0.
+# From the two graphs, we can see that there have been some impacts on average earnings for series. Despite the overall value of average earning is larger when W = 500, when W = 300, there are two distinct horizontal significant related lines: one is around 0, and another is around 10. When W = 500, there is only one which is around 0.
+
+
 
 # how to estimate the average number of plays before stopping?
 # We store the value of each time (total repeatting time is 100) the number of plays for a series in a list, and then calculate the average of the sum of these values. We receive a number of (about) 205. 
