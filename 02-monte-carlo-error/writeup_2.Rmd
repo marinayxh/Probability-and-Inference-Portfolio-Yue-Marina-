@@ -1,0 +1,111 @@
+---
+title: "writeup_2"
+output: html_document
+---
+
+
+Log2 scale:
+```{r}
+n <- rep(NA,14)
+for(i in 1:14){
+  n[i] <-2^(i+1)
+}
+M <- matrix(NA,14,5)
+p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
+for(x in 1:length(p)){
+  for(y in 1:length(n)){
+    TestSample <- rep(NA,1000)
+    for(z in 1:1000){
+      TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])
+    }
+    M[y,x]<- mean(TestSample)
+  }
+  
+}
+```
+
+```{r}
+plot(M[,1], xlim = c(0,14),ylim = c(0,0.2),xaxt="n",xlab = "N(log2 scale)",ylab="Absolute Error")
+lname <- p
+xname <- n
+axis(1, at=1:14,las=2,lab=xname)
+lines(M[,1],col="red",type = "b")
+lines(M[,2],col="blue",type = "b")
+lines(M[,3],col="green",type = "b")
+lines(M[,4],col="purple",type = "b")
+lines(M[,5],col="orange",type = "b")
+```
+
+
+Absolute error is deeply decreasing when the replicate number (in log2 scale) getting larger, with highest relative error laying on p=0.50.
+
+```{r}
+n <- rep(NA,14)
+for(i in 1:14){
+  n[i] <-2^(i+1)
+}
+MR <- matrix(NA,14,5)
+p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
+for(x in 1:length(p)){
+  for(y in 1:length(n)){
+    TestSample <- rep(NA,1000)
+    for(z in 1:1000){
+      TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])/p[x]
+    }
+    MR[y,x]<- mean(TestSample)
+  }
+  
+}
+```
+
+```{r}
+plot(MR[,1], xlim = c(0,14),ylim = c(0,2.0),xaxt="n",xlab = "N(log2 scale)",ylab="Relative Error")
+lname <- p
+xname <- n
+axis(1, at=1:14,las=2,lab=xname)
+
+lines(MR[,1],col="red",type = "b")
+lines(MR[,2],col="blue",type = "b")
+lines(MR[,3],col="green",type = "b")
+lines(MR[,4],col="purple",type = "b")
+lines(MR[,5],col="orange",type = "b")
+```
+
+
+Relative error is deeply decreasing when the replicate number (in log2 scale) getting larger, with highest relative error laying on p=0.01.
+
+
+*******************************************************
+
+log10 scale with absolute error:
+```{r}
+n <- rep(NA,8)
+for(i in 1:8){
+  n[i] <-10^(i+1)
+}
+MR <- matrix(NA,8,5)
+p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
+for(x in 1:length(p)){
+  for(y in 1:length(n)){
+    TestSample <- rep(NA,50)
+    for(z in 1:50){
+      TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])/p[x]
+    }
+    MR[y,x]<- mean(TestSample)
+  }
+  
+}
+```
+
+```{r}
+plot(MR[,1], xlim = c(0,8),ylim = c(0,0.8),xaxt="n",xlab = "N(log10 scale)",ylab="Relative Error")
+lname <- p
+xname <- n
+axis(1, at=1:8,las=2,lab=xname)
+
+lines(MR[,1],col="red",type = "b")
+lines(MR[,2],col="blue",type = "b")
+lines(MR[,3],col="green",type = "b")
+lines(MR[,4],col="purple",type = "b")
+lines(MR[,5],col="orange",type = "b")
+```
