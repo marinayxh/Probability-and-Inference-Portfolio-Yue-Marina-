@@ -1,15 +1,12 @@
 ---
 title: "writeup"
-output: html_document
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 #' A single play of the Martingale strategy
 #' This type of system is based on the idea that you will double your bet after losing trades and—in theory—you will always cover your losses with winning bets that are double the amount of the losing bet.
-#'
+#'                                
 #' Takes a state list, spins the roulette wheel, returns the state list with updated values (for example, budget, plays, etc)
 #' @param state A list with the following entries: 
 #'   B              number, the budget
@@ -20,6 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #'   previous_wager number, the wager in the previous play (0 at first play)
 #'   previous_win   TRUE/FALSE, indicator if the previous play was a win (TRUE at first play)
 #' @return The updated state list
+
 
 ```{r}
 
@@ -323,7 +321,7 @@ plot(set_changed)
 
 
 # how to estimate the average number of plays before stopping?
-# We store the value of each time (total repeatting time is 100) the number of plays for a series in a list, and then calculate the average of the sum of these values. We receive a number of (about) 205. 
+# We store the value of each time (total repeatting time is 100) the number of plays for a series in a list, and then calculate the average of the sum of these values. We receive a number of (about) 218. 
 
 ```{r}
 set_play<-c()
