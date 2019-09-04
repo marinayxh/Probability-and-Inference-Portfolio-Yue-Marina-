@@ -1,5 +1,5 @@
 ---
-title: "writeup_2"
+title: "Monte Carlo Simulation Error"
 output: html_document
 ---
 
@@ -10,34 +10,27 @@ SIMULATION
 * Large-scale computer-based simulations is a method of producing quantitative and
 predictive information. It is better that simulation results can come with a high confidence level.
 * For doing simulation, we could generate randoms from unknown distribution and then repeat the simulation multiple times. Results will not be the same for each time.
-* Since each time simulation are not the same, simulations involve their attendant errors, and these error models can be used to improve the prediction.
+* For repeating the simulation process, each time the outputs are not the same. Simulations involve their attendant errors, and these error models can be used to improve the prediction.
 * Some of the reasons for simulation errors: inaccurate input data, inaccurate physics models, and limited accuracy of the solutions of the governing equations.
 
 
 ABSOLUTE ERROR
 * Absolute error is the difference between the measured value and "true" value.
 * This can be caused by your scale not measuring the exact amount you are trying to measure.
-* Absolute error = measurement value - true value
+* Absolute error = measurement - true value
 
 RELATIVE ERROR
 * When used as a measure of precision, it is the ratio of the absolute error of a measurement to the measurement being taken. 
 * It can describe accuracy on how a measurement is compared to the true value.
-* Relative error = absolute error/measurement value
-
-
-R code for the formula:
-R #Replicates)
-p #prob of interest)
-p_hat <- rbinom(1, R, p)/R
-abs_error <- abs(p-p_hat)
-rel_error <- abs_error/p
+* Relative error = absolute error/true value
 
 -------------------------------------------
-Here we perform a 14 X 5 factorial experiment simulation that estimates the error for each combination of replicate number (22, 23, …, 215) and probability (0.01, 0.05, 0.10, 0.25, 0.50). Let p hat denote the probability estimated from simulation, and let p denote the true underlying probability.
+Here we perform a 14 X 5 factorial experiment simulation that estimates the error for each combination of replicate number (2^2, 2^3, …, 2^15) and probability (0.01, 0.05, 0.10, 0.25, 0.50). Let p hat denote the probability estimated from simulation, and let p denote the true underlying probability.
 
 The main idea is to create a matrix that can store all the mean number of the absolute error/ relative error from each sample size, and then we can make a plot for these mean numbers.
 
-Log2 scale:
+
+Simulation error in Log2 scale:
 
 ```{r}
 n <- rep(NA,14)
@@ -48,8 +41,8 @@ M <- matrix(NA,14,5)
 p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
 for(x in 1:length(p)){
   for(y in 1:length(n)){
-    TestSample <- rep(NA,1000)
-    for(z in 1:1000){
+    TestSample <- rep(NA,100000)
+    for(z in 1:100000){
       TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])
     }
     M[y,x]<- mean(TestSample)
@@ -83,8 +76,8 @@ MR <- matrix(NA,14,5)
 p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
 for(x in 1:length(p)){
   for(y in 1:length(n)){
-    TestSample <- rep(NA,1000)
-    for(z in 1:1000){
+    TestSample <- rep(NA,100000)
+    for(z in 1:100000){
       TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])/p[x]
     }
     MR[y,x]<- mean(TestSample)
@@ -118,7 +111,7 @@ From the bottom of the graph to the top: the line that made based on each probab
 
 Then we try to generate the results with the y-axis is on the log10 scale and find a relationship between using log10 scale and log2 scale.
 
-log10 scale:
+Simulation error with y-axis in log10 scale:
 
 ```{r}
 n <- rep(NA,14)
@@ -129,8 +122,8 @@ M10 <- matrix(NA,14,5)
 p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
 for(x in 1:length(p)){
   for(y in 1:length(n)){
-    TestSample <- rep(NA,1000)
-    for(z in 1:1000){
+    TestSample <- rep(NA,100000)
+    for(z in 1:100000){
       TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])
     }
     M10[y,x]<- log10(mean(TestSample))
@@ -162,8 +155,8 @@ M10_R <- matrix(NA,14,5)
 p <- c(0.01, 0.05, 0.10, 0.25, 0.50)
 for(x in 1:length(p)){
   for(y in 1:length(n)){
-    TestSample <- rep(NA,1000)
-    for(z in 1:1000){
+    TestSample <- rep(NA,100000)
+    for(z in 1:100000){
       TestSample[z] <- abs(rbinom(1, n[y],p[x])/n[y]-p[x])/p[x]
     }
     M10_R[y,x]<- log10(mean(TestSample))
@@ -190,7 +183,7 @@ We could see that they have a linear relationship for both absolute and relative
 
 
 ------------------------------------------------------------------------------------
-For better understanding:
+For more information:
 
 * There are two main reasons to use logarithmic scales in charts and graphs. The first is to respond to skewness towards large values; the data values are spread out better with the logarithmic scale. The second is to show percent change or multiplicative factors. 
 * Check more info on https://www.forbes.com/sites/naomirobbins/2012/01/19/when-should-i-use-logarithmic-scales-in-my-charts-and-graphs/#344eb6715e67
