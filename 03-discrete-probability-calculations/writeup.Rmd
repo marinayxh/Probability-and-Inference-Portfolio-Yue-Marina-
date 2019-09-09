@@ -136,15 +136,11 @@ In our case:
               (P(Braves win World Series in 7 games|PB=0.55)*P(PB=0.55))
               /P(Braves win World Series in 7 games)
 
-By calculating, we could get P(PB=0.55|Braves win World Series in 7 games) under the assumption that PB=0.55 is 0.5, and P(PB=0.55|Braves win World Series in 7 games) under the assumption that PB=0.45 is 0.776.
+By calculating, we could get P(PB=0.55|Braves win World Series in 7 games) under the assumption that PB=0.55 or PB = 0.45 is 0.55, in the case that we consider the probability of PB = 0.55 and the probability of PB = 0.45 are the same.
 
 ```{r}
-# When PB = 0.55
-P <- (pnbinom(3,4,0.55)*(1/2))/pnbinom(3,4,0.55)
+P <- (dnbinom(3,4,0.55)*(1/2))/((dnbinom(3,4,0.55)+dnbinom(3,4,0.45))/2)
 P
-# When PB = 0.45
-P_a <- (pnbinom(3,4,0.55)*(1/2))/pnbinom(3,4,0.45)
-P_a
 ```
 
 
