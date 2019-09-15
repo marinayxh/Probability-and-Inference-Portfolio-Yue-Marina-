@@ -1,0 +1,231 @@
+---
+title: "If home field advantage exists, how much of an impact does it have on winning the world series?"
+output: html_document
+---
+
+
+
+
+
+
+
+
+### Background Introduction
+
+The home field advantage is the edge which a team may have when playing a game at its home stadium. For example, it is the edge the Braves may have over the Yankees when the head-to-head match-up is in Atlanta. It is the advantage the Yankees may have when the head-to-head match-up is in New York.
+
+The World Series is a first-to-4-wins match-up between the champions of the American and National Leagues of Major League Baseball. In this assignment, you are going to use simulation and analytic methods to compare the probability of winning the World Series with and without home field advantage.
+
+
+### Setup
+
+Suppose that the Braves and the Yankees are teams competing in the World Series.
+
+We have two possible schedules for each game of the series. (NYC = New York City, ATL = Atlanta)
+
+Let PB be the probability that the Braves win a single head-to-head match-up with the Yankees, under the assumption that home field advantage doesn’t exist. Let PBH denote the probability that the Braves win a single head-to-head match-up with the Yankees as the home team (H for home). Let PBA denote the probability that the Braves win a single head-to-head match-up with the away team (A for away).
+
+
+Game Location     No advantage        Advantage
+ATL	              PB	                PBH = PB*1.1
+NYC	              PB	                PBA = 1−(1−PB)*1.1
+
+
+### Questions
+
+_1. Compute analytically the probability that the Braves win the world series when the sequence of game locations is {NYC, NYC, ATL, ATL, ATL, NYC, NYC}. Calculate the probability with and without home field advantage when PB=0.55. What is the difference in probabilities?_
+
+```{r}
+# Get all the possible outcomes
+require(dplyr)
+require(data.table)
+library(ggplot2)
+library(ie2misc)
+apo <- fread("D:/Fall 2019/Prob 5620/Probability-and-Inference-Portfolio-Yue-Marina-/04-world-series-home-field/all-possible-world-series-outcomes.csv")
+```
+
+```{r}
+
+# Home Field indicator
+hfi <- c(0,0,1,1,1,0,0) #{NYC, NYC, ATL, ATL, ATL, NYC, NYC}
+
+# P_B, with home field advantage
+pb <- 0.55
+advantage_multiplier <- 1.1 # Set = 1 for no advantage
+pbh <- 0.55*advantage_multiplier
+pba <- 1 - (1 - 0.55)*advantage_multiplier
+
+# Calculate the probability of each possible outcome
+apo[, p := NA_real_] # Initialize new column in apo to store prob
+for(i in 1:nrow(apo)){
+  prob_game <- rep(1, 7)
+  for(j in 1:7){
+    p_win <- ifelse(hfi[j], pbh, pba)
+    prob_game[j] <- case_when(
+        apo[i,j,with=FALSE] == "W" ~ p_win
+      , apo[i,j,with=FALSE] == "L" ~ 1 - p_win
+      , TRUE ~ 1
+    )
+  }
+  apo[i, p := prod(prob_game)] # Data.table syntax
+}
+
+# Sanity check: does sum(p) == 1?
+apo[, sum(p)] # This is data.table notation
+
+# Probability of overall World Series outcomes
+apo[, sum(p), overall_outcome]
+
+```
+
+```{r}
+# When there is no home field advantage
+# Calculate the probability of each possible outcome
+apo[, p_no_a := NA_real_] # Initialize new column in apo to store prob
+for(i in 1:nrow(apo)){
+  prob_game <- rep(1, 7)
+  for(j in 1:7){
+    p_win <- ifelse(hfi[j], pb, pb)
+    prob_game[j] <- case_when(
+        apo[i,j,with=FALSE] == "W" ~ p_win
+      , apo[i,j,with=FALSE] == "L" ~ 1 - p_win
+      , TRUE ~ 1
+    )
+  }
+  apo[i, p_no_a := prod(prob_game)] # Data.table syntax
+}
+# Sanity check: does sum(p) == 1?
+apo[, sum(p_no_a)] # This is data.table notation
+
+# Probability of overall World Series outcomes
+apo[, sum(p_no_a), overall_outcome]
+
+View(apo)
+head(apo)
+```
+
+Here we have p as a new column standing for probability with home field advantage, and we have p_no_a as a new column standing for probability without home field advantage. Compared to the other one, we can see that when there is no home field advantage, the winning probability stays the same when the last win hits on the same game. From the overall outcome, since 0.608 is greater than 0.604, we could see that the winning probability is slightly higher when there is no home field advantage for this specific sequence of game locations.
+
+
+_2. Calculate the same probabilities as the previous question by simulation._
+
+```{r}
+# When there is home field advantage
+hfi <- c(0,0,1,1,1,0,0) 
+#{NYC, NYC, ATL, ATL, ATL, NYC, NYC}
+
+# P_B, with home field advantage
+# pb <- 0.55
+# advantage_multiplier <- 1.1 # Set = 1 for no advantage
+# pbh <- 0.55*advantage_multiplier
+# pba <- 1 - (1 - 0.55)*advantage_multiplier
+set.seed(4321)
+
+hfap<- rep(NA,10000)
+for(i in 1:10000){
+  win_count <- 0
+  lose_count <- 0
+  pb_rate <- 1
+  counter <- 1
+  while(win_count<4 && lose_count<4 ){
+    
+    win_rate <- 0
+    if(counter == 3 || counter == 4 || counter == 5){
+      win_rate = 0.55 * 1.1
+    }else{
+      win_rate = 1 - (1 - 0.55) * 1.1
+    }
+    counter = counter + 1
+    
+    random <- sample(1:1000,1)
+    
+      if(random<=(win_rate * 1000)){
+        pb_rate = pb_rate * win_rate
+        win_count = win_count+1
+      }
+      else{
+        pb_rate = pb_rate * (1 - win_rate)
+        lose_count = lose_count+1
+      }
+  }
+  hfap[i]=pb_rate
+}
+ggplot(as.data.frame(hfap), aes(x=seq_along(hfap),y=hfap)) + 
+  geom_histogram(stat = "identity")
+  
+```
+
+
+```{r}
+# when there is no home field advantage
+set.seed(4321)
+
+nhfap <- rep(NA,10000)
+for(i in 1:10000){
+  win_count <- 0
+  lose_count <- 0
+  pb_rate <- 1
+  while(win_count<4 && lose_count<4 ){
+    random <- sample(1:100,1)
+    if(random<=55){
+      pb_rate = pb_rate*0.55
+      win_count = win_count+1
+    }
+    else{
+      pb_rate = pb_rate*0.45
+      lose_count = lose_count+1
+    }
+   
+  }
+  nhfap[i]=pb_rate
+}
+ggplot(as.data.frame(nhfap), aes(x=seq_along(nhfap),y=nhfap)) + 
+  geom_histogram(stat = "identity")
+  
+
+```
+
+
+
+_3. What is the absolute and relative error for your simulation in the previous question?_
+
+```{r}
+# Absolute error
+# hfap, measurement
+# nhfap, true value
+absolute_error <- rep(NA,10000)
+for(i in 1:10000){
+  absolute_error[i] <- hfap[i]-nhfap[i]
+}
+plot(absolute_error, xlim = c(0,10000),ylim = c(-0.1,0.1),xaxt="n",ylab="Absolute Error")
+
+
+ggplot(as.data.frame(absolute_error),aes(x=seq_along(absolute_error),y=absolute_error)) + 
+  geom_histogram(stat = "identity")
+```
+
+
+
+```{r}
+# Relative error
+# hfap, measurement
+# nhfap, true value
+relative_error <- rep(NA,10000)
+for(i in 1:10000){
+  relative_error[i] <- (hfap[i]-nhfap[i])/nhfap[i]
+}
+
+ggplot(as.data.frame(relative_error),aes(x=seq_along(relative_error),y=relative_error)) + 
+  geom_histogram(stat = "identity")
+```
+
+
+```{r}
+mae(hfap,nhfap)
+```
+
+_4. Does the difference in probabilites (with vs without home field advantage) depend on PB?_
+No, PB has not been changed here in our tests.
+
+_5. Does the difference in probabilites (with vs without home field advantage) depend on the advantage factor?_
+Should not be.
