@@ -7,3 +7,6 @@ It has all the comments, codes and results.
 
 
 [02-monte-carlo-error assignment](/02-monte-carlo-error/writeup_2.Rmd)
+
+
+[03-discrete-probability-calculations](/03-discrete-probability-calculations/writeup.Rmd)
