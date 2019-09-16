@@ -10,3 +10,6 @@ It has all the comments, codes and results.
 
 
 [03-discrete-probability-calculations](/03-discrete-probability-calculations/writeup.Rmd)
+
+
+[04-world-series-home-field](/04-world-series-home-field/writeup.html)
