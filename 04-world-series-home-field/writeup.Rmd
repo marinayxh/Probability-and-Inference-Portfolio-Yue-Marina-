@@ -41,19 +41,28 @@ require(dplyr)
 require(data.table)
 library(ggplot2)
 library(ie2misc)
-apo <- fread("D:/Fall 2019/Prob 5620/Probability-and-Inference-Portfolio-Yue-Marina-/04-world-series-home-field/all-possible-world-series-outcomes.csv")
+apo1 <- fread("D:/Fall 2019/Prob 5620/Probability-and-Inference-Portfolio-Yue-Marina-/04-world-series-home-field/all-possible-world-series-outcomes.csv")
 ```
 
 ```{r}
+hfa_function<-function(series_start=1,pb = 0.55,advantage_multiplier=1.1, apo=apo1){
+
 
 # Home Field indicator
-hfi <- c(0,0,1,1,1,0,0) #{NYC, NYC, ATL, ATL, ATL, NYC, NYC}
+if (series_start ==1){
+  hfi <- c(1,1,0,0,0,1,1)
+}else{
+  hfi <- 1-c(1,1,0,0,0,1,1)
+}
 
 # P_B, with home field advantage
-pb <- 0.55
-advantage_multiplier <- 1.1 # Set = 1 for no advantage
-pbh <- 0.55*advantage_multiplier
-pba <- 1 - (1 - 0.55)*advantage_multiplier
+pbh <- pb*advantage_multiplier
+pba <- 1 - (1 - pb)*advantage_multiplier
+
+if(pbh >1 | pbh <0|pba>1|pba<0){
+  stop("Try again")
+}
+
 
 # Calculate the probability of each possible outcome
 apo[, p := NA_real_] # Initialize new column in apo to store prob
@@ -71,37 +80,14 @@ for(i in 1:nrow(apo)){
 }
 
 # Sanity check: does sum(p) == 1?
-apo[, sum(p)] # This is data.table notation
+# apo[, sum(p)] # This is data.table notation
 
 # Probability of overall World Series outcomes
-apo[, sum(p), overall_outcome]
+copy(apo[, sum(p), overall_outcome])
 
-```
-
-```{r}
-# When there is no home field advantage
-# Calculate the probability of each possible outcome
-apo[, p_no_a := NA_real_] # Initialize new column in apo to store prob
-for(i in 1:nrow(apo)){
-  prob_game <- rep(1, 7)
-  for(j in 1:7){
-    p_win <- ifelse(hfi[j], pb, pb)
-    prob_game[j] <- case_when(
-        apo[i,j,with=FALSE] == "W" ~ p_win
-      , apo[i,j,with=FALSE] == "L" ~ 1 - p_win
-      , TRUE ~ 1
-    )
-  }
-  apo[i, p_no_a := prod(prob_game)] # Data.table syntax
 }
-# Sanity check: does sum(p) == 1?
-apo[, sum(p_no_a)] # This is data.table notation
-
-# Probability of overall World Series outcomes
-apo[, sum(p_no_a), overall_outcome]
-
-View(apo)
-head(apo)
+hfa_function()
+hfa_function(advantage_multiplier = 1)
 ```
 
 Here we have p as a new column standing for probability with home field advantage, and we have p_no_a as a new column standing for probability without home field advantage. Compared to the other one, we can see that when there is no home field advantage, the winning probability stays the same when the last win hits on the same game. From the overall outcome, since 0.608 is greater than 0.604, we could see that the winning probability is slightly higher when there is no home field advantage for this specific sequence of game locations.
@@ -150,8 +136,7 @@ for(i in 1:10000){
   }
   hfap[i]=pb_rate
 }
-ggplot(as.data.frame(hfap), aes(x=seq_along(hfap),y=hfap)) + 
-  geom_histogram(stat = "identity")
+(mean_hfap <- mean(hfap))
   
 ```
 
@@ -179,8 +164,7 @@ for(i in 1:10000){
   }
   nhfap[i]=pb_rate
 }
-ggplot(as.data.frame(nhfap), aes(x=seq_along(nhfap),y=nhfap)) + 
-  geom_histogram(stat = "identity")
+(mean_nhfap <- mean(nhfap))
   
 
 ```
@@ -197,11 +181,7 @@ absolute_error <- rep(NA,10000)
 for(i in 1:10000){
   absolute_error[i] <- hfap[i]-nhfap[i]
 }
-plot(absolute_error, xlim = c(0,10000),ylim = c(-0.1,0.1),xaxt="n",ylab="Absolute Error")
-
-
-ggplot(as.data.frame(absolute_error),aes(x=seq_along(absolute_error),y=absolute_error)) + 
-  geom_histogram(stat = "identity")
+(mean(absolute_error))
 ```
 
 
@@ -214,18 +194,10 @@ relative_error <- rep(NA,10000)
 for(i in 1:10000){
   relative_error[i] <- (hfap[i]-nhfap[i])/nhfap[i]
 }
-
-ggplot(as.data.frame(relative_error),aes(x=seq_along(relative_error),y=relative_error)) + 
-  geom_histogram(stat = "identity")
+(mean(relative_error))
 ```
 
 
 ```{r}
 mae(hfap,nhfap)
 ```
-
-_4. Does the difference in probabilites (with vs without home field advantage) depend on PB?_
-No, PB has not been changed here in our tests.
-
-_5. Does the difference in probabilites (with vs without home field advantage) depend on the advantage factor?_
-Should not be.
