@@ -13,3 +13,6 @@ It has all the comments, codes and results.
 
 
 [04-world-series-home-field](/04-world-series-home-field/writeup.html)
+
+
+[05-world-series-home-field](/05-quantile-error/writeup.html)
