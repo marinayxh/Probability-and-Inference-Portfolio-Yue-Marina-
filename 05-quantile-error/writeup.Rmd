@@ -30,7 +30,7 @@ library(dplyr)
 ### Distribution 1: The Standard Normal Distribution
 
 #### Figure of the Length of middle 95% of sampling distribution
-Here we could see that between 0.4 and 0.6 quantile, the middle 95% sampling distribution hits the lowest point, so the overall graph is concave up. 
+Here we could see that between 0.4 and 0.6 quantile, the middle 95% sampling distribution gets dense and hits the lowest point, which means a more precisely estimation happened here. The overall graph is concaved up. 
 ```{r}
 p <- seq(0.05, 0.95, by = 0.05)
 
@@ -51,12 +51,14 @@ for (i in 1:19) {
   mid.lengths[i] <- quantile(quantiles_snd[,i],0.975)-quantile(quantiles_snd[,i],0.025)
 }
 
-plot(p,mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "p")
+plot(p,mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "b")
+
+# customerize the x axes: set axes = F inside the plot function, then add another line of code: axis(1, at = seq(.05,.95,by = .1))
 
 ```
 
 #### Figure of the length of the middle 95% of the sampling distribution by density
-Here we could see that the overall distribution is showing a negative relationship between the two variables, and there are two points for each quantile.
+Here we could see that the overall distribution is showing a negative relationship between the two variables, which means a higher density has a lower length. There are two density points for the same length because, from the sampling distribution (the first graph), we could see that for the left tail and right tail, there are some points have the same slope/density.
 ```{r}
 # Requirement 2
 plot(dnorm(qnorm(p)),mid.lengths, xlab = "Density", ylab = "Length", main = "Length of the middle 95% of the sampling distribution by density", type = "p")
@@ -68,7 +70,7 @@ plot(dnorm(qnorm(p)),mid.lengths, xlab = "Density", ylab = "Length", main = "Len
 ### Distribution 2: The exponential distribution with rate = 1.
 
 #### Figure of the Length of middle 95% of sampling distribution
-Here we could see for the exponential distribution (with rate = 1), the middle 95% sampling distribution shows an increasing exponential graph. 
+Here we could see for the exponential distribution (with rate = 1), the middle 95% sampling distribution shows an increasing exponential distribution shape. Length range gets bigger for this distribution.
 ```{r}
 # Requirement 1
 quantiles_ed <- matrix(NA,nrow = 5000,ncol = 19)
@@ -88,11 +90,11 @@ for (i in 1:19) {
   ed.mid.lengths[i] <- quantile(quantiles_ed[,i],0.975)-quantile(quantiles_ed[,i],0.025)
 }
 
-plot(p,ed.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "p")
+plot(p,ed.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "b")
 ```
 
 #### Figure of the length of the middle 95% of the sampling distribution by density
-Here we could see that there are two points for each density.
+Here we could see that for this distribution, it is not shown clear which point is most densed. 
 ```{r}
 # Requirement 2
 plot(dnorm(qnorm(p)),ed.mid.lengths, xlab = "Density", ylab = "Length", main = "Length of the middle 95% of the sampling distribution by density", type = "p")
@@ -101,6 +103,9 @@ plot(dnorm(qnorm(p)),ed.mid.lengths, xlab = "Density", ylab = "Length", main = "
 
 
 ### Distribution 3: Mixture distribution I (Given the following code)
+
+
+
 rf3 <- function(N){
   G <- sample(0:2, N, replace = TRUE, prob = c(5,3,2))
   (G==0)*rnorm(N) + (G==1)*rnorm(N,4) + (G==2)*rnorm(N,-4,2)
@@ -114,8 +119,10 @@ df3 <- function(x){
   .5*dnorm(x) + .3*dnorm(x,4) + .2*dnorm(x,-4,2)
 }
 
+
+
 #### Figure of the Length of middle 95% of sampling distribution
-Here we could see for this mixture distribution, it has binomial distribution graph, and there are two peaks when probability is about 0.2 and 0.7.The graph for quantile has shown the same trend.
+Here we could see for this mixture distribution, it has binomial distribution graph, and there are two peaks when probability is about 0.2 and 0.7. We also can find that when quantile hits to about 0.4, it is more densed. The range of the length is getting bigger here.
 ```{r}
 # Requirement 1
 
@@ -163,14 +170,14 @@ roots[i]<-uniroot(pnew, c(-100,100))[[1]]
 }
 
 # Prob 
-plot(p, mix3.mid.lengths, xlab = "Probability", ylab = "Length", main = "Length of middle 95% of sampling distribution by probability", type = "p")
+plot(p, mix3.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution by probability", type = "b")
 
 # Quant
-plot(roots, mix3.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "p")
+plot(roots, mix3.mid.lengths, xlab = "Probability", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "b")
 ```
 
 #### Figure of the length of the middle 95% of the sampling distribution by density
-Here we could see that the overall trend is going down between these two variables.
+Here we could see that the overall trend is going down between these two variables, but the points are kind of everywhere.
 ```{r}
 # Requirement 2
 #Density
@@ -180,13 +187,18 @@ plot(df3(roots),mix3.mid.lengths, xlab = "Density", ylab = "Length", main = "Len
 
 
 ### Distribution 4: Mixture distribution II (Given the following code)
+
+
+
 rf4 <- function(N){
   G <- sample(0:1, N, replace = TRUE)
   (G==0)*rbeta(N,5,1) + (G==1)*rbeta(N,1,5)
 }
 
+
+
 #### Figure of the Length of middle 95% of sampling distribution
-Here we could see for this mixture distribution, it has a normal distribution sampling.
+Here we could see for this mixture distribution, it has a normal distribution sampling. Here, it shows least precise when quantile hits the peak: look at how many points appearing, and the peak has the least. The range of the length is the smallest between these distributions.
 ```{r}
 # Requirement 1
 
@@ -217,11 +229,11 @@ for (i in 1:19) {
 
 
 # Quant
-plot(p, mix4.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "p")
+plot(p, mix4.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of middle 95% of sampling distribution", type = "b")
 ```
 
 #### Figure of the length of the middle 95% of the sampling distribution by density
-Here we could see that the overall trend is going up between these two variables, and there are about two points under one x variable.
+Here we could see that the overall trend is going up between these two variables. The range of the density is also larger: larger density number means better precision.
 ```{r}
 # Requirement 2
 #Density
@@ -232,8 +244,16 @@ plot(dnorm(qnorm(p)),mix4.mid.lengths, xlab = "Density", ylab = "Length", main =
 
 ## Questions
 1. Which quantiles have more precision? less precision?
+
+When quantile hits to 0.4 or 0.5, it has more precision for the first three distributions. When quantile hits to 0.5, it has less precision for the last distribution.
+
 2. When does the median have the tightest sampling distribution?
+
+For the fourth distribution because the upper limit of the length is the smallest.
+
 3. Select a distribution and create a figure similar to the first one above, adding additional lines for N=400, 800, 1600. Explain how the information in the figure might be used when planning data collection and data analysis.
+
+The limit of length is changing while N is changing. We need a larger size of N if we want a better and more precisely estimation. 
 
 Normal Standard Distribution has been used for this one:
 ```{r}
@@ -264,4 +284,3 @@ set <- matrix(c(size(400),size(800),size(1600)),nrow = length(size(400)))
 matplot(set, type = "l",ylim = c(),xlab = "Pth quantile",ylab = "Length", main = "Length of the middle 95% of the normal sampling distribution by different sample size")
 
 ```
-
