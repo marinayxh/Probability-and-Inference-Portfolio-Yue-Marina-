@@ -1,16 +1,22 @@
 ---
 title: "How often does the better team win the World Series?"
-output: html_notebook
+author: "Xiaohe (Marina) Yue"
+output:
+  html_document:
+    code_folding: hide
+    theme: cosmo
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+editor_options:
+  chunk_output_type: inline
 ---
 
-
-
-
-INTRODUCTION
-
-
-
-
+# INTRODUCTION
+***
 The world series is a best-of-7 match-up between the champions of the American and National Leagues of Major League Baseball. We suppose that the Braves and the Twins are teams competing in the World Series.
 
 What we know (in any given game):
@@ -23,38 +29,27 @@ What we know (in any given game):
 
 
 
-QUESTIONS AND SOLUTIONS
+# QUESTIONS AND SOLUTIONS
+***
 
 
     1. What is the probability that the Braves win the World Series given that PB = 0.55?
 
-We know that the best situation for a "best-of-seven" is having one team winning the first four games.
-
-Then, we assume that Braves will have its last win at the fifth game, then it will need to win any three of the previous four games; in other words, it will need to lose one of the previous four games.
-
-If we continue this way, putting the last win at the sixth or seventh game, then Braves will need to lose two or three of the previous games.
-
-Sum the probability of these four situations occuring, then we could get the answer.
+We know that the best situation for a team to win "best-of-seven" is to winning the first four games. Other than that, first, we assume that Braves will have their last win at the fifth game, which means they will need to win any three of the previous four games (in other words, they will lose one of the previous four games). If we continue in this way and assume the last win at either the sixth or seventh game, then Braves will need to lose either two or three of the previous games. Then, we could sum the probabilities of these four potential situations, and we could get the answer for this question.
 
 Here, we introduce a term called "negative binomial distribution". It is a discrete probability distribution of the number of successes in a sequence of independent and identically distributed Bernoulli trials before a specified (non-random) number of failures (denoted r) occurs. It can directly give us the probability of having three, two or one game lose before winning the fourth games (no matter how many games can be played in total).
-
-
-Here, we first load the package that we need.
-
-```{r}
+```{r include=F}
 library(tidyverse)
 ```
 
-
-
-From the result, we could know that the probability for Braves to win a best-of-7 is 0.608 when givin the prob of Braves to win is 0.55.
-
-
+From the calculation, we could know that the probability for Braves to win a best-of-7 is 0.608 when givin the prob of Braves to win is 0.55.
 ```{r}
 pnbinom(3,4,0.55)
 
 ```
 
+    
+    
     2. What is the probability that the Braves win the World Series given that PB = x?
 
 We now try to find the probability that Braves win the World Series given PB=x; x could be a number from 0.5 to 1.0, and here we set the interval to be 0.01 and continue using negative binomial.
@@ -73,18 +68,19 @@ dt%>%
   geom_point()
 ```
 
+    
+    
     3. Suppose one could change the World Series to be best-of-9 or some other best-of-X series. What is the shortest series length so that P(Braves win World Series|PB=.55)≥0.8?
 
 Because of the property of this game type, X could not be an even number. We have tried X to be from 1 to 99, and we use negative binomial as well. 
 
-According to this new vector that containing all the probability of Braves winning the World Series (given PB=0.55) under different series length, we can see that when they have seventy-one games (best-of-71), Braves could win the world series with a probability equal or greater than 0.8.
+According to this new vector that containing all the probability of Braves winning the World Series (given PB=0.55) under different series length, we can see that when they have seventy-one games (best-of-71), Braves could win the world series with a probability equal or greater than 0.8 (specificly, it is 0.8017017).
 ```{r}
 
 c_win_series <- rep(NA,99)
 for (i in seq(1,99,2)) {
   c_win_series[i]<-pnbinom(floor(i/2),ceiling(i/2),0.55)
 }
-c_win_series
 c_win_series[71]
 
 ```
@@ -106,7 +102,6 @@ for (k in 1:49) {
     c_win_series_greater[h,k]<-pnbinom(floor(i[k]/2),ceiling(i[k]/2),p_x[h])
   }
 }
-c_win_series_greater
 
 matplot(c_win_series_greater,type="l",xaxt="n",yaxt="n",xlab = "PB",ylab="Series Length")
 abline(h=0.8,col="black",lty=2, lwd=3)
@@ -146,7 +141,8 @@ P
 
 
 
-REFERENCE
+# REFERENCE
+***
 
 https://en.wikipedia.org/wiki/Bayes%27_theorem
 
