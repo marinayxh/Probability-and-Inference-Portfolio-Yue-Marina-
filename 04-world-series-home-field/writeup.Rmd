@@ -1,47 +1,58 @@
 ---
 title: "If home field advantage exists, how much of an impact does it have on winning the world series?"
-output: html_document
+author: "Xiaohe (Marina) Yue"
+output:
+  html_document:
+    code_folding: hide
+    theme: cosmo
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
+editor_options:
+  chunk_output_type: inline
 ---
 
-
-
-
-
-
-
-
-### Background Introduction
+# Background Introduction
 
 The home field advantage is the edge which a team may have when playing a game at its home stadium. For example, it is the edge the Braves may have over the Yankees when the head-to-head match-up is in Atlanta. It is the advantage the Yankees may have when the head-to-head match-up is in New York.
 
 The World Series is a first-to-4-wins match-up between the champions of the American and National Leagues of Major League Baseball. In this assignment, you are going to use simulation and analytic methods to compare the probability of winning the World Series with and without home field advantage.
 
 
-### Setup
 
-Suppose that the Braves and the Yankees are teams competing in the World Series.
 
-We have two possible schedules for each game of the series. (NYC = New York City, ATL = Atlanta)
+# Setup
+
+Suppose that the Braves and the Yankees are teams competing in the World Series. We have two possible schedules for each game of the series. (NYC = New York City, ATL = Atlanta)
 
 Let PB be the probability that the Braves win a single head-to-head match-up with the Yankees, under the assumption that home field advantage doesn’t exist. Let PBH denote the probability that the Braves win a single head-to-head match-up with the Yankees as the home team (H for home). Let PBA denote the probability that the Braves win a single head-to-head match-up with the away team (A for away).
 
 
-Game Location     No advantage        Advantage
-ATL	              PB	                PBH = PB*1.1
-NYC	              PB	                PBA = 1−(1−PB)*1.1
+Game Location  |   No advantage   |    Advantage
+---------------|------------------|-----------------------
+ATL	           |   PB	            |    PBH = PB*1.1
+NYC	           |   PB	            |    PBA = 1−(1−PB)*1.1
 
 
-### Questions
+
+
+# Questions
+***
 
 _1. Compute analytically the probability that the Braves win the world series when the sequence of game locations is {NYC, NYC, ATL, ATL, ATL, NYC, NYC}. Calculate the probability with and without home field advantage when PB=0.55. What is the difference in probabilities?_
 
-```{r}
+We have p as a new column standing for probability with home field advantage, and we have p_no_a as a new column standing for probability without home field advantage. Compared to the other one, we can see that when there is no home field advantage, the winning probability stays the same when the last win hits on the same game. From the overall outcome, since 0.608 is greater than 0.604, we could see that the winning probability is slightly higher when there is no home field advantage for this specific sequence of game locations. The difference between prob is about 0.026.
+```{r include=FALSE}
 # Get all the possible outcomes
 require(dplyr)
 require(data.table)
 library(ggplot2)
 library(ie2misc)
-apo1 <- fread("D:/Fall 2019/Prob 5620/Probability-and-Inference-Portfolio-Yue-Marina-/04-world-series-home-field/all-possible-world-series-outcomes.csv")
+library(readr)
+apo1 <- fread("D:/Fall 2019/Prob 5620/Probability-and-Inference-Portfolio-Yue-Marina/04-world-series-home-field/all-possible-world-series-outcomes.csv")
 ```
 
 ```{r}
@@ -87,17 +98,17 @@ copy(apo[, sum(p), overall_outcome])
 
 }
 hfa_function()
-hfa_function(advantage_multiplier = 1)
-```
+hfa_function(advantage_multiplier=1)
 
-Here we have p as a new column standing for probability with home field advantage, and we have p_no_a as a new column standing for probability without home field advantage. Compared to the other one, we can see that when there is no home field advantage, the winning probability stays the same when the last win hits on the same game. From the overall outcome, since 0.608 is greater than 0.604, we could see that the winning probability is slightly higher when there is no home field advantage for this specific sequence of game locations.
+```
 
 
 _2. Calculate the same probabilities as the previous question by simulation._
 
+Now, we simulate the process that we have done for the first quetion in order to mimic the reality. After the repetition, we see that the same probability for the situation when there is home field advantage is about 0.028, and the same probability for the situation when there is no home field advantage is about 0.026. The difference is about 0.017. It is actually smaller than our probability in difference that from the first question. According to the simulation, there is no obvious difference between these two conditions.
 ```{r}
 # When there is home field advantage
-hfi <- c(0,0,1,1,1,0,0) 
+# hfi <- c(0,0,1,1,1,0,0) 
 #{NYC, NYC, ATL, ATL, ATL, NYC, NYC}
 
 # P_B, with home field advantage
@@ -166,13 +177,14 @@ for(i in 1:10000){
 }
 (mean_nhfap <- mean(nhfap))
   
-
+mean_hfap - mean_nhfap
 ```
 
 
 
 _3. What is the absolute and relative error for your simulation in the previous question?_
 
+Now, we try to test the simulation errors that both on absolute and relative. According to what we know from the blog of "Monte Carlo Simulation Error" [link](https://github.com/marinayxh/Probability-and-Inference-Portfolio-Yue-Marina-/tree/master/02-monte-carlo-error), we could easily get these two types of errors. The absolute error is 0.0017 and the relative error here is 0.9814. A high relative error of 0.9814 means that the approximation is correct to within ninety eight part in one hundred, regardless of the size of the actual value, which shows that our simulation is fine. 
 ```{r}
 # Absolute error
 # hfap, measurement
@@ -183,9 +195,6 @@ for(i in 1:10000){
 }
 (mean(absolute_error))
 ```
-
-
-
 ```{r}
 # Relative error
 # hfap, measurement
@@ -195,9 +204,4 @@ for(i in 1:10000){
   relative_error[i] <- (hfap[i]-nhfap[i])/nhfap[i]
 }
 (mean(relative_error))
-```
-
-
-```{r}
-mae(hfap,nhfap)
 ```
