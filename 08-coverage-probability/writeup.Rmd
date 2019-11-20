@@ -46,7 +46,7 @@ Perform a simulation to calculate the coverage probability of the 95% confidence
 # Steps to Find the Coverage Probability
 ***
 First, we load the required packages.
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(dplyr)
 ```
 
@@ -82,7 +82,7 @@ est.mle <- function(data){
   return(c(length(data),mle.mean,mle.sd)) # list of parameters 
 }
 
-est.mle(true.parameters)
+est.mle(true.parameters)%>%generate_data()
 
 ```
 
