@@ -1619,14 +1619,6 @@ div.tocify {
 <hr />
 <p>First, we load the required packages.</p>
 <pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
 <p>Then, here, we have a sample of size N (201) from a known distribution (normal distribution). We set the parameters to be mean = 0, and sd = 1. Then we have the two functions: one is for generating data by using rnorm and another one is for comparing interval to the true value, which will return 1 for true (capture) and 0 for false (no capture).</p>
 <pre class="r"><code>set.seed(43589)
 N &lt;- 201
@@ -1650,8 +1642,8 @@ capture_median &lt;- function(ci){
   return(c(length(data),mle.mean,mle.sd)) # list of parameters 
 }
 
-est.mle(true.parameters)</code></pre>
-<pre><code>## [1]  3.00000 67.33333 94.51749</code></pre>
+est.mle(true.parameters)%&gt;%generate_data()</code></pre>
+<pre><code>## [1] -95.25167 105.34713  89.06316</code></pre>
 <p>Now we have our function to find the 95% confidence interval of the median to be the middle 95% of sampling distribution of the median, and we set the process of generating the median to be 5000 and store the values. Then we use the quantile function for finding the confidence interval for our new sample medians.</p>
 <pre class="r"><code>boot.meds.ci &lt;- function(parameters) {
   R &lt;- 5000
@@ -1668,7 +1660,7 @@ for(i in 1:5000){
   capture[i]&lt;-true.parameters %&gt;% generate_data %&gt;% est.mle %&gt;% boot.meds.ci %&gt;% capture_median
 }
 mean(capture)</code></pre>
-<pre><code>## [1] 0.9864</code></pre>
+<pre><code>## [1] 0.9856</code></pre>
 </div>
 
 
