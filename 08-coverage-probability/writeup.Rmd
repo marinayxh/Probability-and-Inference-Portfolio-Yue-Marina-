@@ -82,7 +82,7 @@ est.mle <- function(data){
   return(c(length(data),mle.mean,mle.sd)) # list of parameters 
 }
 
-est.mle(true.parameters)%>%generate_data()
+true.parameters %>% generate_data %>% est.mle
 
 ```
 
@@ -99,7 +99,7 @@ boot.meds.ci <- function(parameters) {
 }
 ```
 
-Here, we estimate the coverage probability as the proportion of samples for which the confidence interval captured the population parameter. We count the number of capture and then find the coverage probability. The simulation time is set to be 5000, and we have the coverage probability of 0.9886.
+Here, we estimate the coverage probability as the proportion of samples for which the confidence interval captured the population parameter. We count the number of capture and then find the coverage probability. The simulation time is set to be 5000, and we have the coverage probability of 0.99.
 ```{r}
 capture <- NA
 for(i in 1:5000){

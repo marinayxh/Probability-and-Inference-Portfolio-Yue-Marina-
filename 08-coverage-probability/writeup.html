@@ -1642,8 +1642,8 @@ capture_median &lt;- function(ci){
   return(c(length(data),mle.mean,mle.sd)) # list of parameters 
 }
 
-est.mle(true.parameters)%&gt;%generate_data()</code></pre>
-<pre><code>## [1] -95.25167 105.34713  89.06316</code></pre>
+true.parameters %&gt;% generate_data %&gt;% est.mle</code></pre>
+<pre><code>## [1] 201.00000000  -0.07987644   0.98780942</code></pre>
 <p>Now we have our function to find the 95% confidence interval of the median to be the middle 95% of sampling distribution of the median, and we set the process of generating the median to be 5000 and store the values. Then we use the quantile function for finding the confidence interval for our new sample medians.</p>
 <pre class="r"><code>boot.meds.ci &lt;- function(parameters) {
   R &lt;- 5000
@@ -1654,13 +1654,13 @@ est.mle(true.parameters)%&gt;%generate_data()</code></pre>
   }
   quantile(sample.meds, c(0.025, 0.975))
 }</code></pre>
-<p>Here, we estimate the coverage probability as the proportion of samples for which the confidence interval captured the population parameter. We count the number of capture and then find the coverage probability. The simulation time is set to be 5000, and we have the coverage probability of 0.9886.</p>
+<p>Here, we estimate the coverage probability as the proportion of samples for which the confidence interval captured the population parameter. We count the number of capture and then find the coverage probability. The simulation time is set to be 5000, and we have the coverage probability of 0.99.</p>
 <pre class="r"><code>capture &lt;- NA
 for(i in 1:5000){
   capture[i]&lt;-true.parameters %&gt;% generate_data %&gt;% est.mle %&gt;% boot.meds.ci %&gt;% capture_median
 }
 mean(capture)</code></pre>
-<pre><code>## [1] 0.9856</code></pre>
+<pre><code>## [1] 0.99</code></pre>
 </div>
 
 
