@@ -14,7 +14,7 @@ editor_options:
 ---
 
 
-```{r}
+```{r warning=FALSE,message=FALSE}
 # Setup
 library(ggplot2)
 library(dplyr)
@@ -97,7 +97,7 @@ plot(p,ed.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length of
 Here we could see that for this distribution, it is not shown clear which point is most densed. 
 ```{r}
 # Requirement 2
-plot(dnorm(qnorm(p)),ed.mid.lengths, xlab = "Density", ylab = "Length", main = "Length of the middle 95% of the sampling distribution by density", type = "p")
+plot(dexp(qexp(p)),ed.mid.lengths, xlab = "Density", ylab = "Length", main = "Length of the middle 95% of the sampling distribution by density", type = "p")
 ```
 
 
@@ -122,7 +122,7 @@ df3 <- function(x){
 
 
 #### Figure of the Length of middle 95% of sampling distribution
-Here we could see for this mixture distribution, it has binomial distribution graph, and there are two peaks when probability is about 0.2 and 0.7. We also can find that when quantile hits to about 0.4, it is more densed. The range of the length is getting bigger here.
+Here we could see for this mixture distribution. There are two peaks when probability is about 0.2 and 0.7. We also can find that when quantile hits to about 0.4, it is more densed. The range of the length is getting bigger here.
 ```{r}
 # Requirement 1
 
@@ -233,23 +233,39 @@ plot(p, mix4.mid.lengths, xlab = "pth quantile", ylab = "Length", main = "Length
 ```
 
 #### Figure of the length of the middle 95% of the sampling distribution by density
-Here we could see that the overall trend is going up between these two variables. The range of the density is also larger: larger density number means better precision.
-```{r}
+Here we could see that the overall trend is going down between these two variables. The range of the density is also larger: larger density number means better precision.
+```{r warning= FALSE}
 # Requirement 2
 #Density
-plot(dnorm(qnorm(p)),mix4.mid.lengths, xlab = "Density", ylab = "Length", main = "Length of the middle 95% of the sampling distribution by density", type = "p")
+pf4<-function(x){
+  0.5*pbeta(x,5,1)+0.5*pbeta(x,1,5)
+}
+x_density_4<-rep(NA,19)
+df4_1<-rep(NA,19)
+
+for( i in 1:19){
+  f4<-function(x){0.5*pbeta(x,5,1)+0.5*pbeta(x,1,5)-p[i]}
+  x_density_4[i]<-uniroot(f4, lower = -200, upper = 200)
+}  
+
+df4 <- function(x){
+  0.5*dbeta(x,5,1)+0.5*dbeta(x,1,5)
+}
+for (i in seq_along(x_density_4)){
+df4_1[i] <-df4(x_density_4[[i]])
+}
+plot(df4_1,mix4.mid.lengths,xlab="Density",ylab="Length",main="Length of the middle 95% of the sampling distribution by density", type = "p")
 ```
 
 
 
 ## Questions
 1. Which quantiles have more precision? less precision?
-
-When quantile hits to 0.4 or 0.5, it has more precision for the first three distributions. When quantile hits to 0.5, it has less precision for the last distribution.
+For the first distribution, we can see that when pth quantile hits in range 0.4 to 0.6, the length of the middle 95% has the smallest value, which means that between 40th quantile and 60th quantile, for this distribution, the median has more precision. When the pth quantile less than about 0.1 or higher than about 0.9, we could see that points are loose, and the length is high for either situation. For the second distribution, we can see that when the pth quantile is higher than about 0.9, the points are loose and length value is high, which means that here the quantile has less precision. In the other hand, we can see that when pth quantile is less than about 0.1, the length of the middle 95% has the smallest value, which means that inside of this range, the quantile has more precision. For the third distribution, we can see that when pth quantile hits to about 0.4, the points are dense and the length value is relative small, which means that around 40th quantile has more precision. In the other hand, when pth quantile hits to 0.1, points are loose, and the length value is high which means about 10th quantile has less precision. For the fourth distribution,  we can see that when pth quantile hits to 0.5, the points are loose and length value is high which means that the 50th quantile has less precision. In the other hand, 10th and 90th quantile have more precision since points are dense here and the length value is low. 
 
 2. When does the median have the tightest sampling distribution?
 
-For the fourth distribution because the upper limit of the length is the smallest.
+For the first distribution, we can see that when the pth quantile hits to 0.5, the length of the middle 95% of the sampling distribution is nearly around 0.35 and points are dense compared to other distribution. We can also see the density here is the highest among other quantiles. Thus the median in the first distribution has the tightest sampling distribution. 
 
 3. Select a distribution and create a figure similar to the first one above, adding additional lines for N=400, 800, 1600. Explain how the information in the figure might be used when planning data collection and data analysis.
 
@@ -282,5 +298,6 @@ return(mid.lengths_diff_size)
 set <- matrix(c(size(400),size(800),size(1600)),nrow = length(size(400)))
 
 matplot(set, type = "l",ylim = c(),xlab = "Pth quantile",ylab = "Length", main = "Length of the middle 95% of the normal sampling distribution by different sample size")
+legend("topleft", legend=c("size = 400", "size = 800", "size = 1600" ), col=c("black", "red", "green"), lty=1:2, cex=0.8)
 
 ```
