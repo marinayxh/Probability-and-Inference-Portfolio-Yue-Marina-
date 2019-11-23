@@ -163,7 +163,7 @@ for(j in seq_along(walk_out_money)){
 First, let us assume that we have 200 dollars in our pocket, and we want to know the frequency of earning certain amounts of money if we play roulette tonight. We follow the strategy that talked about before and assume that we will quit the game after we have 300 dollars in total as our budget or we lose all the money. Moreover, since we are not planning to play the game all night, we will set the play limit as 1000. 
 ```{r}
 # Walk out money distribution
-hist(walk_out_money, breaks = 100, xlab = "Walk Out Money in Dollars", ylab = "Frequency", main = "Distribution of Earnings When the Initial Budget is $200")
+hist(walk_out_money, breaks = 100, xlab = "Walk Out Money in Dollars", ylab = "Frequency", main = "Distribution of Walk Out When the Initial Budget is $200")
 ```
 
 As you can see, the result is about 50/50 for people who walk out with 0 cent and people who walk out with $300 including $200 initial budget.
@@ -182,8 +182,8 @@ Now, we can provide a figure that show how the gamblers earnings (or losses) evo
 
 ```{r}
 set.seed(2)
-plot(one_series(), main=paste("Distribution of Earnings"), xlab="play number", ylab="earnings")
-plot(one_series()[1:10], type = "b",  xlab="play number", ylab="earnings")
+plot(one_series(), main=paste("Budget Left Over a Series of Games"), xlab="play number", ylab="earnings")
+plot(one_series()[1:10], type = "b",  xlab="play number", ylab="budget")
 ```
 
 ### Adjusting the condition
@@ -206,8 +206,8 @@ return(set)
 }
 
 list<-c(mean(change_W(300)),mean(change_W(350)),mean(change_W(400)),mean(change_W(450)),mean(change_W(500)))
-plot(list,xlab="Different Winnings Threshold for Stopping Values", ylab="Average Earnings",type = "b")
-
+xw <- seq(300,500,50)
+plot(x= xw, y = list,xlab="different budget threshold", ylab="average earnings",type = "b")
 ```
 
 ### Estimating the average number of plays before stopping
