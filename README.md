@@ -16,3 +16,15 @@ It has all the comments, codes and results.
 
 
 [05-world-series-home-field](/05-quantile-error/writeup.html)
+
+
+[06-order-statistics](/06-order-statistics/writeup.html)
+
+
+[08-coverage-probability](/08-coverage-probability/writeup.html)
+
+
+[10-CLT-approximation](/10-CLT-approximation/writeup.html)
+
+
+[11-correlation-power](/11-correlation-power/writeup.html)
