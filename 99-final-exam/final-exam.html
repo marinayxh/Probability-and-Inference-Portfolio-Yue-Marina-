@@ -718,7 +718,23 @@ n_5b</code></pre>
 <pre class="r"><code>result_5b/n_5b</code></pre>
 <pre><code>## [1] 1.915299</code></pre>
 <p><strong>A.</strong> What is the variance of yearly hospital charge under the new policy?</p>
-<pre class="r"><code>######################################### come back for this one on Saturdat</code></pre>
+<pre class="r"><code>set.seed(1)
+result_5a &lt;- rep(NA)
+
+hospital_charge_list_5a &lt;- hospital_charges(1000)
+n_5b &lt;- 0
+for (i in 1:1000){
+  
+  if (hospital_charge_list[i] &lt;= 10){
+    result_5a[i] &lt;- hospital_charge_list[i]
+  }
+  else{
+    result_5a[i] &lt;- 0
+  }
+}
+
+var(result_5a)</code></pre>
+<pre><code>## [1] 6.399298</code></pre>
 </div>
 <div id="transformations-sampling-distributions" class="section level1">
 <h1>6. Transformations &amp; Sampling Distributions</h1>

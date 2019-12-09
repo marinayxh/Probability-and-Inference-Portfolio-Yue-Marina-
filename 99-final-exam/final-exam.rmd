@@ -366,8 +366,22 @@ result_5b/n_5b
 **A.** What is the variance of yearly hospital charge under the new policy?
 
 ```{r} 
-######################################### come back for this one on Saturdat
+set.seed(1)
+result_5a <- rep(NA)
 
+hospital_charge_list_5a <- hospital_charges(1000)
+n_5b <- 0
+for (i in 1:1000){
+  
+  if (hospital_charge_list[i] <= 10){
+    result_5a[i] <- hospital_charge_list[i]
+  }
+  else{
+    result_5a[i] <- 0
+  }
+}
+
+var(result_5a)
 ```
 
 
