@@ -24,6 +24,9 @@ It has all the comments, codes and results.
 [08-coverage-probability](/08-coverage-probability/writeup.html)
 
 
+[09-simulation-study](/09-simulation-study/writeup.html)
+
+
 [10-CLT-approximation](/10-CLT-approximation/writeup.html)
 
 
